@@ -5,7 +5,7 @@
 #
 # Parts (default: all four):
 #   --packages   dnf repos, dnf packages, Flatpaks
-#   --shell      zsh, oh-my-zsh, plugins, agnosterzak theme, pokemon-colorscripts
+#   --shell      zsh, oh-my-zsh, plugins
 #   --dotfiles   link configs from dotfiles/ into $HOME
 #   --kde        Hyprland-style KDE: tiling, shortcuts, cheat sheet, focus border
 #
@@ -116,7 +116,7 @@ install_shell() {
             "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     fi
 
-    say "zsh plugins and theme"
+    say "zsh plugins"
     local plugin
     for plugin in zsh-autosuggestions zsh-syntax-highlighting; do
         if [[ -d "$custom/plugins/$plugin" ]]; then
@@ -125,23 +125,7 @@ install_shell() {
             run git clone -q "https://github.com/zsh-users/$plugin" "$custom/plugins/$plugin"
         fi
     done
-    if [[ -f "$custom/themes/agnosterzak.zsh-theme" || -f "$HOME/.oh-my-zsh/themes/agnosterzak.zsh-theme" ]]; then
-        info "ok      agnosterzak theme"
-    else
-        run curl -fsSL -o "$custom/themes/agnosterzak.zsh-theme" \
-            https://raw.githubusercontent.com/zakaziko99/agnosterzak-ohmyzsh-theme/master/agnosterzak.zsh-theme
-    fi
 
-    say "pokemon-colorscripts (terminal greeting)"
-    if command -v pokemon-colorscripts >/dev/null; then
-        info "ok      already installed"
-    else
-        local tmp
-        tmp=$(mktemp -d)
-        run git clone -q --depth 1 https://gitlab.com/phoneybadger/pokemon-colorscripts.git "$tmp/pcs"
-        if ! $DRY_RUN; then (cd "$tmp/pcs" && sudo ./install.sh); fi
-        rm -rf "$tmp"
-    fi
 
     say "Default shell"
     if [[ "$(getent passwd "$USER" | cut -d: -f7)" == */zsh ]]; then

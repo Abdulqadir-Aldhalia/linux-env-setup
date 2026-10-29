@@ -37,7 +37,8 @@ I built this after moving from Hyprland ([JaKooLit / KoolDots](https://github.co
 | **Cheat sheet** | `SUPER+H` opens a popup of every key, grouped by section. `SUPER+SHIFT+K` opens a searchable list |
 | **10 smooth workspaces** | Slide animation (the wallpaper stays still), wrap-around, 4-finger swipes on the touchpad |
 | **Sensible window rules** | Apps never open maximized (they would skip tiling). Picture-in-picture videos stay on top on every workspace |
-| **Shell & apps** | zsh + oh-my-zsh, kitty, LazyVim, rofi, fastfetch, btop, yazi and cava configs, plus my package list |
+| **Shell & terminal** | zsh with a clean, readable prompt (directory, git branch and status, time), kitty with the [Catppuccin Mocha](https://github.com/catppuccin/kitty) theme, and fastfetch system info on start |
+| **Apps** | LazyVim, rofi, btop, yazi and cava configs, plus my package list |
 
 ## Requirements
 
@@ -69,7 +70,7 @@ Keep the repo where you cloned it. Your configs are linked to it, so deleting or
 | Option | Does |
 |---|---|
 | `--packages` | Repos (RPM Fusion, VS Code, Brave, COPR, Flathub), dnf packages, Flatpaks |
-| `--shell` | zsh, oh-my-zsh, plugins, agnosterzak theme, pokemon-colorscripts, default shell |
+| `--shell` | zsh, oh-my-zsh, plugins, default shell |
 | `--dotfiles` | Links configs from `dotfiles/` into `$HOME` |
 | `--kde` | The Hyprland-style KDE layer: tiling, shortcuts, cheat sheet, focus border |
 | `--gaming`, `--asus` | Extra package groups, used together with `--packages` |
@@ -107,8 +108,7 @@ With no part given, it runs all four. Every step is **safe to re-run**: finished
 ### `--shell`
 
 - Installs **oh-my-zsh** without letting it replace `.zshrc` (that comes from `dotfiles/`) or take over the terminal.
-- Adds the **zsh-autosuggestions** and **zsh-syntax-highlighting** plugins, and the **agnosterzak** theme.
-- Installs **pokemon-colorscripts**, used by the terminal greeting together with fastfetch.
+- Adds the **zsh-autosuggestions** (grey suggestions from your history; press → to accept) and **zsh-syntax-highlighting** (valid commands turn green, typos red) plugins.
 - Makes **zsh your default shell**. It asks for your password.
 
 ### `--dotfiles`
@@ -121,6 +121,11 @@ Each config in `dotfiles/` is **symlinked** into place, replacing what was there
 | `dotfiles/.config/kitty` | `~/.config/kitty` (the same applies to `nvim`, `rofi`, `fastfetch`, `btop`, `yazi` and `cava`) |
 
 A symlink means the file lives in the repo, and `~/.config/kitty` just points to it. Editing your config is editing the repo, which is what makes [syncing](#keeping-devices-in-sync) work. Anything that was already there is moved to a backup first.
+
+**The terminal look:**
+- **Prompt** (in `.zshrc`, no theme to install): the current folder in blue, then the git branch in magenta with `*` for unstaged and `+` for staged changes. The `❯` on the next line turns red when the last command failed, and the time is on the right. It uses plain colored text, so it stays readable with any color scheme.
+- **kitty theme:** Catppuccin Mocha (`kitty-themes/Catppuccin-Mocha.conf`), at 95% opacity. Pick another with the `include` line in `kitty.conf`; `kitty-themes/` has many.
+- **Greeting:** fastfetch prints system info with a small Fedora logo when a terminal opens. Configured in `.config/fastfetch/config.jsonc`; remove the `fastfetch` line in `.zshrc` to turn it off.
 
 `.zshrc` only sets up tools that exist: sdkman, bun and opencode are skipped if they aren't installed, so the same file works on every machine.
 
@@ -366,7 +371,7 @@ kde/
 
 - [JaKooLit / KoolDots](https://github.com/LinuxBeginnings): the kitty, rofi and fastfetch configs started there (GPL-3.0)
 - [Krohnkite](https://github.com/anametologin/krohnkite): tiling for KWin (MIT). Not stored in this repo; downloaded at install time
-- [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh), [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions), [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [agnosterzak](https://github.com/zakaziko99/agnosterzak-ohmyzsh-theme), [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts), [LazyVim](https://github.com/LazyVim/LazyVim)
+- [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh), [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions), [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [Catppuccin](https://github.com/catppuccin/kitty) (kitty theme, MIT), [LazyVim](https://github.com/LazyVim/LazyVim)
 
 ## License
 

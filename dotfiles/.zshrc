@@ -1,6 +1,6 @@
 # ── oh-my-zsh ──────────────────────────────────────────────
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="agnosterzak"
+ZSH_THEME=""   # prompt is defined below
 plugins=(
     git
     dnf
@@ -9,15 +9,25 @@ plugins=(
 )
 source "$ZSH/oh-my-zsh.sh"
 
+# ── prompt ─────────────────────────────────────────────────
+# Colored text on the normal background, so it reads well with any terminal theme.
+#   ~/projects/app  main *            20:31
+#   ❯                       (green, or red after a failed command)
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' unstagedstr '*'
+zstyle ':vcs_info:*' stagedstr '+'
+zstyle ':vcs_info:git:*' formats ' %F{magenta} %b%f%F{yellow}%u%c%f'
+zstyle ':vcs_info:git:*' actionformats ' %F{magenta} %b%f %F{red}(%a)%f'
+precmd_functions+=(vcs_info)
+setopt PROMPT_SUBST
+PROMPT=$'\n%F{blue}%B%~%b%f${vcs_info_msg_0_}\n%(?.%F{green}.%F{red})❯%f '
+RPROMPT='%F{8}%D{%H:%M}%f'
+
 # ── greeting ───────────────────────────────────────────────
-if [[ -o interactive ]] && command -v fastfetch >/dev/null; then
-    if command -v pokemon-colorscripts >/dev/null; then
-        pokemon-colorscripts --no-title -s -r | fastfetch -c "$HOME/.config/fastfetch/config-pokemon.jsonc" \
-            --logo-type file-raw --logo-height 10 --logo-width 5 --logo -
-    else
-        fastfetch
-    fi
-fi
+# system info with a small distro logo (config: ~/.config/fastfetch/config.jsonc)
+[[ -o interactive ]] && command -v fastfetch >/dev/null && fastfetch
 
 # ── history / tools ────────────────────────────────────────
 HISTFILE=~/.zsh_history
