@@ -1,77 +1,181 @@
 # linux-env-setup
 
-My Fedora + KDE Plasma setup: **Hyprland-style keybinds, dynamic tiling and smooth workspaces on top of a stable KDE**, plus my shell, terminal, editor and the packages I use. One command sets up a new machine, and the same repo keeps all my devices in sync.
+My Fedora + KDE Plasma setup: **Hyprland-style keybinds, dynamic tiling and smooth workspaces on top of a stable KDE desktop**, plus my shell, terminal, editor and the packages I use.
 
-Built after moving from Hyprland ([JaKooLit / KoolDots](https://github.com/LinuxBeginnings)) to KDE Plasma 6 for stability, while keeping the Hyprland workflow.
+One command sets up a fresh machine, and the same repo keeps all my devices in sync. It's also a backup: if a machine dies, clone, run, log in, and everything is back.
 
-## Features
+I built this after moving from Hyprland ([JaKooLit / KoolDots](https://github.com/LinuxBeginnings)) to KDE Plasma 6 for stability and its built-in tools, while keeping the Hyprland workflow I was used to.
 
-- **Hyprland keybinds in KDE**: `SUPER+Enter` terminal, `SUPER+D` launcher, `SUPER+Q` close, `SUPER+1…0` workspaces, `SUPER+SHIFT+1…0` move window and follow, and more
-- **Dynamic tiling** with [Krohnkite](https://github.com/anametologin/krohnkite): dwindle, master/stack, columns, monocle and floating layouts, chosen per workspace, with 8px gaps
-- **Tiling on/off** with `SUPER+SHIFT+T` for a plain KDE experience when you need it
-- **Focus border**: a thin accent-colored frame around the focused window, with unfocused windows dimmed
-- **Cheat sheet popup** (`SUPER+H`) and searchable keybinds (`SUPER+SHIFT+K`)
-- **10 workspaces** with a smooth slide; the wallpaper stays still
-- **Apps never open maximized**, so they always join the tiling layout; `SUPER+F` still maximizes
-- Picture-in-picture videos stay on top on every workspace
-- zsh + oh-my-zsh, kitty, LazyVim, rofi, fastfetch, btop, yazi and cava configs
+---
+
+## Contents
+
+- [What you get](#what-you-get)
+- [Requirements](#requirements)
+- [Quick start](#quick-start)
+- [What the installer does](#what-the-installer-does)
+- [How the KDE layer works](#how-the-kde-layer-works)
+- [Using it day to day](#using-it-day-to-day)
+- [Keybinds](#keybinds)
+- [Keeping devices in sync](#keeping-devices-in-sync)
+- [Customising](#customising)
+- [Backups, uninstalling and restoring](#backups-uninstalling-and-restoring)
+- [Troubleshooting](#troubleshooting)
+- [Repo layout](#repo-layout)
+- [Credits](#credits) · [License](#license)
+
+---
+
+## What you get
+
+| | |
+|---|---|
+| **Hyprland keybinds in KDE** | `SUPER+Enter` terminal, `SUPER+D` launcher, `SUPER+Q` close, `SUPER+1…0` workspaces, `SUPER+SHIFT+1…0` move the window and follow it, and more. [Full list](#keybinds) |
+| **Dynamic tiling** | [Krohnkite](https://github.com/anametologin/krohnkite) with dwindle, master/stack, columns, monocle and floating layouts. Each workspace keeps its own layout. 8px gaps, no title bars on tiled windows |
+| **Tiling on/off** | `SUPER+SHIFT+T` switches between tiling and plain KDE, which brings the title bars back |
+| **Focus border** | A thin accent-colored frame around the focused window. Unfocused windows are dimmed |
+| **Cheat sheet** | `SUPER+H` opens a popup of every key, grouped by section. `SUPER+SHIFT+K` opens a searchable list |
+| **10 smooth workspaces** | Slide animation (the wallpaper stays still), wrap-around, 4-finger swipes on the touchpad |
+| **Sensible window rules** | Apps never open maximized (they would skip tiling). Picture-in-picture videos stay on top on every workspace |
+| **Shell & apps** | zsh + oh-my-zsh, kitty, LazyVim, rofi, fastfetch, btop, yazi and cava configs, plus my package list |
 
 ## Requirements
 
-- Fedora (tested on Fedora 44)
-- KDE Plasma 6 on Wayland (tested on 6.7)
+- **Fedora** (tested on Fedora 44). The package step uses `dnf` and COPR.
+- **KDE Plasma 6 on Wayland** (tested on 6.7) for the KDE part. On another desktop, install Plasma first: `sudo dnf group install kde-desktop`.
+- A normal user account with `sudo`. Don't run the installer as root.
 
-## Install
+## Quick start
 
 ```bash
 git clone https://github.com/Abdulqadir-Aldhalia/linux-env-setup.git ~/linux-env-setup
 cd ~/linux-env-setup
-./install.sh            # everything
+./install.sh --dry-run     # optional: see exactly what it will do
+./install.sh               # do it
 ```
 
-Then **log out and back in once** so KDE picks up every shortcut, and press `SUPER+H`.
+When it finishes, **log out and back in once**, then press `SUPER+H`.
 
-Or pick parts:
+Keep the repo where you cloned it. Your configs are linked to it, so deleting or moving the folder breaks them.
 
-| Command | Does |
-|---|---|
-| `./install.sh --packages` | Repos (RPM Fusion, VS Code, Brave, COPR, Flathub), dnf packages, Flatpaks |
-| `./install.sh --shell` | zsh, oh-my-zsh, plugins, agnosterzak theme, pokemon-colorscripts |
-| `./install.sh --dotfiles` | Links configs into `$HOME` |
-| `./install.sh --kde` | The Hyprland-style KDE layer: tiling, shortcuts, cheat sheet, focus border |
-| `--gaming` / `--asus` | Extra package groups (Steam / ASUS laptop tools), combine with `--packages` |
-
-Everything is safe to re-run. Any file the installer replaces is moved to `~/.local/state/linux-env-setup/backup-<date>/` first.
-
-## Keeping devices in sync
-
-Configs are **symlinked** into the repo, so editing `~/.config/kitty/kitty.conf` edits the repo copy.
+### Running only some parts
 
 ```bash
-cd ~/linux-env-setup
-git add -A && git commit -m "tweak kitty" && git push   # on the machine you changed
-git pull                                               # on your other machines
+./install.sh --dotfiles --kde          # just configs + KDE layer (no packages)
+./install.sh --packages --gaming       # packages, including Steam
+./install.sh --packages --asus         # packages, including ASUS laptop tools
 ```
 
-For settings that should stay on one machine only, use `~/.zshrc.local`, which `.zshrc` loads if it exists and is not in the repo.
+| Option | Does |
+|---|---|
+| `--packages` | Repos (RPM Fusion, VS Code, Brave, COPR, Flathub), dnf packages, Flatpaks |
+| `--shell` | zsh, oh-my-zsh, plugins, agnosterzak theme, pokemon-colorscripts, default shell |
+| `--dotfiles` | Links configs from `dotfiles/` into `$HOME` |
+| `--kde` | The Hyprland-style KDE layer: tiling, shortcuts, cheat sheet, focus border |
+| `--gaming`, `--asus` | Extra package groups, used together with `--packages` |
+| `--dry-run` | Prints every action without changing anything |
+| `--uninstall` | Removes the links and restores your backups ([details](#backups-uninstalling-and-restoring)) |
 
-## Customising keybinds
+With no part given, it runs all four. Every step is **safe to re-run**: finished steps print `ok` and are skipped.
 
-1. Edit `kde/bin/apply-shortcuts.py` and run it: `python3 ~/.config/kde-hypr/apply-shortcuts.py`. Changes apply instantly.
-2. Update `kde/bin/keybinds.tsv` (Key, Action, Note, tab-separated) so the cheat sheet matches.
+---
 
-> Don't edit `~/.config/kglobalshortcutsrc` by hand: KDE overwrites it from memory at logout. The script sets shortcuts through KDE's shortcut service instead.
+## What the installer does
+
+### `--packages`
+
+1. **`packages/repos.sh`** enables the extra repositories:
+   - **RPM Fusion** free and nonfree: codecs, Steam
+   - **VS Code** (Microsoft) and **Brave**
+   - **COPR**: `dejan/lazygit` and `lihaohong/yazi`, which aren't in Fedora
+   - **Flathub**, for Flatpaks
+2. **Installs dnf packages** from these lists (one name per line, `#` for comments):
+
+   | List | What's in it |
+   |---|---|
+   | `packages/base.txt` | zsh, git, fzf, ripgrep, fd, bat, lsd, btop, nvtop, fastfetch, yazi, lazygit, neovim, `python3-dbus` (needed by the shortcut script) |
+   | `packages/dev.txt` | gcc, make, VS Code, Docker (`moby-engine` + compose) |
+   | `packages/desktop.txt` | kitty, rofi, yad (cheat sheet), clipboard tools, qalculate, Spectacle, Thunar, mpv, pavucontrol, KDE Connect, Brave, OBS, Syncthing |
+   | `packages/fonts.txt` | JetBrains Mono, Fira Code, Font Awesome, Noto CJK, Source Code Pro |
+   | `packages/optional/gaming.txt` | Steam (`--gaming`) |
+   | `packages/optional/asus.txt` | asusctl, supergfxctl, ROG GUI (`--asus`, enables the `lukenukem/asus-linux` COPR) |
+
+   It installs with `--skip-unavailable`, so one renamed package doesn't stop the rest.
+3. **Docker**: enables the service and adds you to the `docker` group, so you can run `docker` without `sudo` (after your next login).
+4. **Flatpaks** from `packages/flatpak.txt`: Zen Browser, Free Download Manager, Zoom.
+
+### `--shell`
+
+- Installs **oh-my-zsh** without letting it replace `.zshrc` (that comes from `dotfiles/`) or take over the terminal.
+- Adds the **zsh-autosuggestions** and **zsh-syntax-highlighting** plugins, and the **agnosterzak** theme.
+- Installs **pokemon-colorscripts**, used by the terminal greeting together with fastfetch.
+- Makes **zsh your default shell**. It asks for your password.
+
+### `--dotfiles`
+
+Each config in `dotfiles/` is **symlinked** into place, replacing what was there:
+
+| Repo | Becomes |
+|---|---|
+| `dotfiles/.zshrc` | `~/.zshrc` |
+| `dotfiles/.config/kitty` | `~/.config/kitty` (the same applies to `nvim`, `rofi`, `fastfetch`, `btop`, `yazi` and `cava`) |
+
+A symlink means the file lives in the repo, and `~/.config/kitty` just points to it. Editing your config is editing the repo, which is what makes [syncing](#keeping-devices-in-sync) work. Anything that was already there is moved to a backup first.
+
+`.zshrc` only sets up tools that exist: sdkman, bun and opencode are skipped if they aren't installed, so the same file works on every machine.
+
+### `--kde`
+
+1. **Links `kde/bin` to `~/.config/kde-hypr`**: the cheat sheet, keybind search, tiling toggle, web search, calculator and the shortcut script.
+2. **Links the two KWin scripts** from `kde/kwin-scripts/` (explained [below](#how-the-kde-layer-works)) into `~/.local/share/kwin/scripts/`.
+3. **Installs Krohnkite** (`kde/install-krohnkite.sh`), the latest release from the [KDE Store](https://store.kde.org/p/2144146), with GitHub as a fallback. It never downgrades a newer version you already have.
+4. **Writes app launchers** to `~/.local/share/applications/hypr-*.desktop`. These are hidden menu entries that the shortcuts start (terminal, rofi, Thunar, ...).
+5. **Applies KDE settings** (`kde/apply-settings.sh`): 10 workspaces, slide animation, faster animations, SUPER+drag to move and resize, Krohnkite gaps and floating apps, dimming of unfocused windows, window rules, and kitty as KDE's terminal.
+6. **Sets every shortcut** (`kde/bin/apply-shortcuts.py`) through KDE's shortcut service, and removes KDE defaults that clash, such as `SUPER+1…9` opening taskbar entries.
+
+---
+
+## How the KDE layer works
+
+KDE can already do most of what Hyprland does. This layer adds the missing parts and remaps the keys.
+
+| Piece | What it is | Why it's needed |
+|---|---|---|
+| **Krohnkite** | A third-party KWin script for dynamic tiling | KDE's built-in tiling is manual, with no automatic layouts |
+| **`hyprlike`** (`kde/kwin-scripts/hyprlike`) | My KWin script | KDE has no "move window to workspace *and follow it*". It also adds the tiling toggle keys and un-maximizes apps as they open |
+| **`focusframe`** (`kde/kwin-scripts/focusframe`) | My KWin script, written in QML | KDE can't draw a colored border around the focused window. This draws a click-through frame that follows it |
+| **`apply-shortcuts.py`** | Sets all shortcuts through KDE's shortcut service (`kglobalaccel`) | Editing `kglobalshortcutsrc` directly doesn't stick: KDE overwrites it at logout |
+| **App launchers** | `hypr-*.desktop` files | KDE shortcuts start apps through desktop entries |
+| **Window rules** | `no-initial-maximize`, `pip` | Krohnkite deliberately ignores maximized windows, and many apps remember being maximized, so without this they would never tile |
+| **`toggle-tiling.sh`** | Turns Krohnkite off or on and brings title bars back | Lets you switch to plain KDE |
+| **Cheat sheet** | `cheatsheet.sh` (yad popup) and `keybinds-search.sh` (rofi), both reading `keybinds.tsv` | One file feeds both |
+
+---
+
+## Using it day to day
+
+- **Tiling** is on by default. New windows join the layout automatically.
+- **Change the layout** of the current workspace with `SUPER+ALT+1` (dwindle), `2` (master/stack), `3` (columns), `4` (monocle) or `5` (floating). `SUPER+ALT+L` cycles through them.
+- **Plain KDE for one workspace:** `SUPER+ALT+5` (floating layout). The others keep tiling.
+- **Plain KDE everywhere:** `SUPER+SHIFT+T` (or `SUPER+ALT+T`). A popup confirms "Tiling off" or "Tiling on". The choice is kept after a reboot.
+- **One window floats instead of tiling:** `SUPER+Space` toggles it. Dialogs, popups and fixed-size windows float on purpose.
+- **Move a window to another workspace:** `SUPER+SHIFT+number` (you follow it) or `SUPER+CTRL+number` (it goes without you).
+- **Forgot a key?** `SUPER+H`.
+
+---
 
 ## Keybinds
 
-**HELP**
+`SUPER` is the Windows key. The same list is in the `SUPER+H` popup.
+
+#### HELP
 
 | Key | Action | Note |
 |---|---|---|
 | `SUPER H` | Cheat sheet (press again to close) |  |
 | `SUPER SHIFT K` | Search keybinds | rofi |
 
-**APPS**
+#### APPS
 
 | Key | Action | Note |
 |---|---|---|
@@ -85,7 +189,7 @@ For settings that should stay on one machine only, use `~/.zshrc.local`, which `
 | `SUPER V / SUPER ALT V` | Clipboard history | Klipper |
 | `ALT Space` | KRunner | search everything |
 
-**WINDOWS**
+#### WINDOWS
 
 | Key | Action | Note |
 |---|---|---|
@@ -101,7 +205,7 @@ For settings that should stay on one machine only, use `~/.zshrc.local`, which `
 | `SUPER drag LMB / RMB` | Move / resize window |  |
 | `SUPER CTRL F9 / F10` | Window to prev / next monitor |  |
 
-**TILING**
+#### TILING
 
 | Key | Action | Note |
 |---|---|---|
@@ -125,7 +229,7 @@ For settings that should stay on one machine only, use `~/.zshrc.local`, which `
 | `SUPER ALT 5` | Layout: floating | this workspace only |
 | `SUPER T` | KDE tile editor | only when tiling is off |
 
-**WORKSPACES**
+#### WORKSPACES
 
 | Key | Action | Note |
 |---|---|---|
@@ -139,7 +243,7 @@ For settings that should stay on one machine only, use `~/.zshrc.local`, which `
 | `4-finger swipe ← →` | Switch workspace | touchpad |
 | `4-finger swipe ↑` | Overview | touchpad |
 
-**SCREENSHOTS**
+#### SCREENSHOTS
 
 | Key | Action | Note |
 |---|---|---|
@@ -147,7 +251,7 @@ For settings that should stay on one machine only, use `~/.zshrc.local`, which `
 | `SUPER Print` | Full screen | Spectacle |
 | `ALT Print` | Active window | Spectacle |
 
-**SYSTEM**
+#### SYSTEM
 
 | Key | Action | Note |
 |---|---|---|
@@ -156,33 +260,114 @@ For settings that should stay on one machine only, use `~/.zshrc.local`, which `
 | `CTRL ALT P / CTRL ALT Del` | Power / logout menu |  |
 | `ALT SHIFT` | Switch keyboard layout | EN / AR |
 
-## Repo layout
+---
 
+## Keeping devices in sync
+
+Your configs are symlinks into this repo, so the workflow is plain git:
+
+```bash
+# on the machine where you changed something
+cd ~/linux-env-setup
+git status                       # see what changed
+git add -A && git commit -m "kitty: bigger font"
+git push
+
+# on your other machines
+cd ~/linux-env-setup && git pull
 ```
-install.sh                 entry point
-packages/                  dnf lists (base, dev, desktop, fonts), flatpaks, repos.sh, optional/
-dotfiles/                  linked into $HOME (.zshrc, .config/*)
-kde/
-  bin/                     linked to ~/.config/kde-hypr: shortcuts, cheat sheet, tiling toggle, rofi helpers
-  kwin-scripts/hyprlike    move-window-and-follow, tiling toggle keys, no-maximize guard
-  kwin-scripts/focusframe  border around the focused window
-  applications/            launcher templates bound to shortcuts
-  apply-settings.sh        KWin settings, window rules, effects
-  install-krohnkite.sh     downloads the Krohnkite tiling script
-```
+
+After pulling:
+- **Config changes** (kitty, nvim, zsh, rofi, ...) apply right away, or the next time you open that app.
+- **Shortcut changes:** run `python3 ~/.config/kde-hypr/apply-shortcuts.py`.
+- **KDE setting changes:** run `~/linux-env-setup/kde/apply-settings.sh`.
+- **New packages:** run `./install.sh --packages`.
+- **Changes to the KWin scripts** (`hyprlike`, `focusframe`): log out and back in. KWin only reloads them at login.
+
+**Machine-specific settings** go in `~/.zshrc.local`. `.zshrc` loads it if it exists, and it's not part of the repo. Use it for aliases with local paths, work-only variables, and so on.
+
+Some apps write into their config folder (nvim updates `lazy-lock.json`, btop saves its settings). That shows up in `git status`; commit it or discard it with `git checkout -- <file>`.
+
+---
+
+## Customising
+
+| I want to… | Do this |
+|---|---|
+| Change or add a shortcut | Edit `kde/bin/apply-shortcuts.py`, run it (it applies instantly), and update `kde/bin/keybinds.tsv` so the cheat sheet matches |
+| Add a package | Add the name to the right file in `packages/`, run `./install.sh --packages` |
+| Change tiling gaps | Edit the `screenGap*` lines in `kde/apply-settings.sh`, run it |
+| Make an app always float | Add its window class to `floatingClass` in `kde/apply-settings.sh` |
+| Change dimming | `Strength` under `Effect-diminactive` in `kde/apply-settings.sh` (0 turns it off) |
+| Change the focus border | `borderWidth`, `radius` and `border.color` in `kde/kwin-scripts/focusframe/contents/ui/main.qml`, then log out and in |
+| Faster or slower animations | `AnimationDurationFactor` in `kde/apply-settings.sh` (1.0 is KDE's default, lower is faster) |
+
+**Shortcut format** in `apply-shortcuts.py`: `"Meta+Shift+Return"`, `"Meta+Alt+Space"`, `"Ctrl+Alt+L"`. `Meta` is SUPER.
+
+> **SHIFT on Wayland:** KDE receives `SHIFT+1` as `!` and `SHIFT+[` as `{`. The script's `with_shifted()` helper binds both forms. Use it for any new SHIFT+number or SHIFT+symbol shortcut.
+
+> **Don't edit `~/.config/kglobalshortcutsrc` by hand.** KDE keeps shortcuts in memory and writes them back at logout, overwriting your edits. Always use the script.
+
+---
+
+## Backups, uninstalling and restoring
+
+- **Backups:** before replacing anything, the installer moves it to `~/.local/state/linux-env-setup/backup-<date>-<time>/`, keeping its path. Each run gets its own folder.
+- **Undo the links:** run `./install.sh --uninstall`. It removes every symlink that points into the repo and puts back the most recent backup of each path. Preview it with `./install.sh --uninstall --dry-run`.
+- **What `--uninstall` leaves alone:** installed packages, KDE settings and the `hypr-*.desktop` launchers. To return KDE shortcuts to the defaults, use System Settings → Keyboard → Shortcuts → "Reset to Defaults". To switch tiling off, press `SUPER+SHIFT+T`.
+
+---
 
 ## Troubleshooting
 
-- **A shortcut does nothing:** log out and back in once after installing, then re-run `python3 ~/.config/kde-hypr/apply-shortcuts.py`.
-- **An app won't tile:** dialogs and fixed-size windows float on purpose. `SUPER+Space` toggles any window between floating and tiled.
-- **SHIFT shortcuts on Wayland:** KDE receives `SHIFT+1` as `!`, so the script binds both forms. Keep that in mind when adding your own.
+| Problem | Fix |
+|---|---|
+| A shortcut does nothing | Log out and back in once after installing: KDE only wires up launcher shortcuts at login. Then run `python3 ~/.config/kde-hypr/apply-shortcuts.py` again |
+| A shortcut opens the wrong thing | Another app or KDE default has the key. Run the shortcut script again; it clears known clashes |
+| An app won't tile | Is it maximized? Press `SUPER+F` to un-maximize. Is it a dialog or fixed-size window? Those float on purpose; `SUPER+Space` tiles it anyway |
+| No title bars, even with tiling off | Press `SUPER+SHIFT+T` to turn tiling back on, then again to turn it off. Turning it off is what restores the title bars |
+| No border around the focused window | Fullscreen and minimized windows have none. Otherwise log out and in; KWin loads `focusframe` at login |
+| Krohnkite was updated from the KDE Store | Fine. The installer never downgrades it |
+| `SHIFT+number` shortcuts don't fire | See the SHIFT-on-Wayland note in [Customising](#customising) |
+
+---
+
+## Repo layout
+
+```
+install.sh                    entry point (run with --help)
+packages/
+  repos.sh                    RPM Fusion, VS Code, Brave, COPR, Flathub
+  base.txt dev.txt desktop.txt fonts.txt flatpak.txt
+  optional/gaming.txt asus.txt
+dotfiles/                     linked into $HOME
+  .zshrc
+  .config/{kitty,nvim,rofi,fastfetch,btop,yazi,cava}
+kde/
+  bin/                        linked to ~/.config/kde-hypr
+    apply-shortcuts.py        every shortcut, set through KDE's shortcut service
+    keybinds.tsv              the cheat sheet's contents (Key, Action, Note)
+    cheatsheet.sh             SUPER+H popup
+    keybinds-search.sh        SUPER+SHIFT+K rofi search
+    toggle-tiling.sh          SUPER+SHIFT+T
+    restore-borders.js        brings title bars back when tiling turns off
+    web-search.sh calc.sh     SUPER+S, SUPER+ALT+C
+  kwin-scripts/
+    hyprlike/                 move-window-and-follow, tiling toggle keys, un-maximize on open
+    focusframe/               border around the focused window
+  applications/*.desktop.in   launcher templates (@HOME@ is replaced at install)
+  apply-settings.sh           KWin settings, effects, window rules
+  install-krohnkite.sh        installs or upgrades Krohnkite, never downgrades
+```
+
+---
 
 ## Credits
 
-- [JaKooLit / KoolDots](https://github.com/LinuxBeginnings): origin of the kitty, rofi and fastfetch configs (GPL-3.0)
-- [Krohnkite](https://github.com/anametologin/krohnkite): tiling for KWin (MIT), downloaded at install time
-- [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh), [agnosterzak](https://github.com/zakaziko99/agnosterzak-ohmyzsh-theme), [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts), [LazyVim](https://github.com/LazyVim/LazyVim)
+- [JaKooLit / KoolDots](https://github.com/LinuxBeginnings): the kitty, rofi and fastfetch configs started there (GPL-3.0)
+- [Krohnkite](https://github.com/anametologin/krohnkite): tiling for KWin (MIT). Not stored in this repo; downloaded at install time
+- [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh), [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions), [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting), [agnosterzak](https://github.com/zakaziko99/agnosterzak-ohmyzsh-theme), [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts), [LazyVim](https://github.com/LazyVim/LazyVim)
 
 ## License
 
-[GPL-3.0](LICENSE)
+[GPL-3.0](LICENSE). Use it, fork it, adapt it. If you share a modified version, share it under the same license.
