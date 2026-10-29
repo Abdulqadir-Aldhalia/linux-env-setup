@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: Cheat Sheet
+Exec=@HOME@/.config/kde-hypr/cheatsheet.sh
+Icon=help-keyboard-shortcuts
+NoDisplay=true
+X-KDE-StartupNotify=false

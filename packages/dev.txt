@@ -1,0 +1,8 @@
+# Development
+gcc
+gcc-c++
+make
+mercurial
+code
+moby-engine
+docker-compose

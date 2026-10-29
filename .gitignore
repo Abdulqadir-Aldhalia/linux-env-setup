@@ -1,0 +1,6 @@
+# runtime state written by apps into linked config dirs
+dotfiles/.config/btop/btop.log
+dotfiles/.config/nvim/lazy-lock.json.bak
+dotfiles/.config/rofi/.current_wallpaper*
+*.swp
+__pycache__/

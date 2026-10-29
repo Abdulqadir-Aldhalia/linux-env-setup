@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: File Manager
+Exec=thunar
+Icon=system-file-manager
+NoDisplay=true
+X-KDE-StartupNotify=false

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: Terminal
+Exec=kitty
+Icon=utilities-terminal
+NoDisplay=true
+X-KDE-StartupNotify=false

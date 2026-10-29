@@ -1,0 +1,14 @@
+{
+    "KPlugin": {
+        "Id": "hyprlike",
+        "Name": "Hyprlike",
+        "Description": "Hyprland-style workspace shortcuts: move window to desktop and follow, move to next/prev desktop",
+        "Authors": [{ "Name": "Abdulqadir Aldhalia" }],
+        "License": "MIT",
+        "Version": "1.0",
+        "EnabledByDefault": true
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js",
+    "KPackageStructure": "KWin/Script"
+}

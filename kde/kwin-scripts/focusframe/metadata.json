@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "focusframe",
+        "Name": "Focus Frame",
+        "Description": "Hyprland-style colored border around the focused window",
+        "Authors": [{ "Name": "Abdulqadir Aldhalia" }],
+        "License": "MIT",
+        "Version": "1.0",
+        "EnabledByDefault": true
+    },
+    "X-Plasma-API": "declarativescript",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "KPackageStructure": "KWin/Script"
+}

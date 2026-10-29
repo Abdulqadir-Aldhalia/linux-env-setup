@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: Web Search
+Exec=@HOME@/.config/kde-hypr/web-search.sh
+Icon=search
+NoDisplay=true
+X-KDE-StartupNotify=false

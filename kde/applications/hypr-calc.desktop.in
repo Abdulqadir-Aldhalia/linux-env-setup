@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: Calculator
+Exec=@HOME@/.config/kde-hypr/calc.sh
+Icon=accessories-calculator
+NoDisplay=true
+X-KDE-StartupNotify=false

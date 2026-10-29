@@ -1,0 +1,2 @@
+# needs RPM Fusion nonfree
+steam

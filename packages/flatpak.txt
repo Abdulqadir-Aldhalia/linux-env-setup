@@ -1,0 +1,3 @@
+app.zen_browser.zen
+org.freedownloadmanager.Manager
+us.zoom.Zoom

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: Browser
+Exec=xdg-open https://
+Icon=internet-web-browser
+NoDisplay=true
+X-KDE-StartupNotify=false

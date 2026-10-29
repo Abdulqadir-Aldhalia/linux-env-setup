@@ -1,0 +1,22 @@
+# Shell & CLI essentials
+zsh
+git
+curl
+wget
+unzip
+jq
+socat
+fzf
+ripgrep
+fd-find
+bat
+lsd
+btop
+nvtop
+fastfetch
+inxi
+yazi
+lazygit
+neovim
+python3-pip
+python3-dbus

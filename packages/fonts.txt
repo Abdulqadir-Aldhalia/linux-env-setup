@@ -1,0 +1,5 @@
+jetbrains-mono-fonts
+fira-code-fonts
+fontawesome-fonts-all
+google-noto-sans-cjk-fonts
+adobe-source-code-pro-fonts

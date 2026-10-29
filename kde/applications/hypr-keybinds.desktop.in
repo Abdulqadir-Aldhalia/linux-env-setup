@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: Search Keybinds
+Exec=@HOME@/.config/kde-hypr/keybinds-search.sh
+Icon=help-keyboard-shortcuts
+NoDisplay=true
+X-KDE-StartupNotify=false

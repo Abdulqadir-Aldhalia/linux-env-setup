@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Hypr: Emoji
+Exec=plasma-emojier
+Icon=face-smile
+NoDisplay=true
+X-KDE-StartupNotify=false

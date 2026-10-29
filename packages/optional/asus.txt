@@ -1,0 +1,4 @@
+# ASUS laptops only — needs: sudo dnf copr enable lukenukem/asus-linux
+asusctl
+asusctl-rog-gui
+supergfxctl
