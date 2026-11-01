@@ -160,12 +160,6 @@ install_kde() {
     done
     run "$REPO/kde/install-krohnkite.sh"
 
-    say "Tiling toggle service (started by SUPER+SHIFT+T)"
-    local unit
-    for unit in "$REPO"/kde/systemd/*.service; do
-        link "$unit" "$HOME/.config/systemd/user/$(basename "$unit")"
-    done
-    run systemctl --user daemon-reload
 
     say "App launchers (bound to SUPER+Enter, SUPER+D, ...)"
     local tpl out
@@ -209,7 +203,7 @@ uninstall() {
             info "restore ~/$rel  (from $(basename "$latest"))"
             run mv "$latest/$rel" "$dst"
         fi
-    done < <(find "$HOME" "$HOME/.config" "$HOME/.local/share/kwin/scripts" "$HOME/.config/systemd/user" -maxdepth 1 -type l -print0 2>/dev/null)
+    done < <(find "$HOME" "$HOME/.config" "$HOME/.local/share/kwin/scripts" -maxdepth 1 -type l -print0 2>/dev/null)
     $found || info "nothing linked"
     info "App launchers in ~/.local/share/applications/hypr-*.desktop and KDE settings were kept."
 }

@@ -32,19 +32,47 @@ registerShortcut("Hyprlike Move Prev", "Hyprlike: Move window to previous deskto
 registerShortcut("Hyprlike Move Next Silent", "Hyprlike: Move window to next desktop silently", "Meta+Ctrl+]", () => moveWindowBy(1, false));
 registerShortcut("Hyprlike Move Prev Silent", "Hyprlike: Move window to previous desktop silently", "Meta+Ctrl+[", () => moveWindowBy(-1, false));
 
-// Krohnkite skips maximized windows, so apps that restore themselves maximized never tile.
-// Un-maximize on open only; SUPER+F still maximizes afterwards.
-workspace.windowAdded.connect(win => {
-    if (win.normalWindow && !win.specialWindow && win.maximizable && win.maximizeMode !== 0) {
-        win.setMaximize(false, false);
-    }
-});
+// ── Tiling on/off (SUPER+SHIFT+T / SUPER+ALT+T) ─────────────────────────────
+// Krohnkite can't be unloaded at runtime: its event handlers keep running until the next
+// login and keep re-tiling windows. So instead of unloading it, switch every workspace
+// between Krohnkite's floating layout (off) and its tile layout (on). Krohnkite applies a
+// layout to the workspace currently shown, so visit each one in turn, then come back.
+let tilingOn = true;
 
-// SUPER+ALT+T / SUPER+SHIFT+T: tiling on/off. KWin scripts can't run programs, so this starts
-// a systemd user service that runs ~/.config/kde-hypr/toggle-tiling.sh.
+function invokeShortcut(name, then) {
+    callDBus("org.kde.kglobalaccel", "/component/kwin", "org.kde.kglobalaccel.Component",
+        "invokeShortcut", name, then);
+}
+
+function setLayoutEverywhere(layoutShortcut) {
+    const start = workspace.currentDesktop;
+    const desktops = workspace.desktops.slice();
+    // no slide animation while flipping through the workspaces
+    callDBus("org.kde.KWin", "/Effects", "org.kde.kwin.Effects", "unloadEffect", "slide");
+    let i = 0;
+    const next = () => {
+        if (i < desktops.length) {
+            workspace.currentDesktop = desktops[i++];
+            invokeShortcut(layoutShortcut, next); // continue once Krohnkite has applied it
+            return;
+        }
+        workspace.currentDesktop = start;
+        callDBus("org.kde.KWin", "/Effects", "org.kde.kwin.Effects", "loadEffect", "slide");
+    };
+    next();
+}
+
 function toggleTiling() {
-    callDBus("org.freedesktop.systemd1", "/org/freedesktop/systemd1", "org.freedesktop.systemd1.Manager",
-        "StartUnit", "linux-env-toggle-tiling.service", "replace");
+    tilingOn = !tilingOn;
+    setLayoutEverywhere(tilingOn ? "KrohnkiteTileLayout" : "KrohnkiteFloatingLayout");
 }
 registerShortcut("Hyprlike Toggle Tiling", "Hyprlike: Toggle tiling on/off", "Meta+Alt+T", toggleTiling);
 registerShortcut("Hyprlike Toggle Tiling Alt", "Hyprlike: Toggle tiling on/off (alternate key)", "Meta+Shift+T", toggleTiling);
+
+// Krohnkite skips maximized windows, so apps that restore themselves maximized never tile.
+// While tiling is on, un-maximize windows as they open; SUPER+F still maximizes afterwards.
+workspace.windowAdded.connect(win => {
+    if (tilingOn && win.normalWindow && !win.specialWindow && win.maximizable && win.maximizeMode !== 0) {
+        win.setMaximize(false, false);
+    }
+});

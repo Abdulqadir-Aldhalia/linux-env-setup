@@ -9,7 +9,6 @@ cheat sheet promises, and checks that the programs behind the launchers exist.
 import os
 import shlex
 import shutil
-import subprocess
 import sys
 
 import dbus
@@ -152,12 +151,6 @@ def main():
             failures += 1
             print(f"  FAIL  hypr-{name}.desktop runs '{program}', which is not installed or not executable")
 
-    print("Tiling toggle service")
-    checked += 1
-    if subprocess.run(["systemctl", "--user", "cat", "linux-env-toggle-tiling.service"],
-                      capture_output=True).returncode != 0:
-        failures += 1
-        print("  FAIL  linux-env-toggle-tiling.service is not installed (run ./install.sh --kde)")
 
     print(f"\n{checked - failures}/{checked} checks passed")
     return 1 if failures else 0
