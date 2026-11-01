@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Hypr: Toggle Tiling
-Exec=@HOME@/.config/kde-hypr/toggle-tiling.sh
-Icon=view-grid
-NoDisplay=true
-X-KDE-StartupNotify=false

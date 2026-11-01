@@ -1,0 +1,6 @@
+[Unit]
+Description=Toggle Krohnkite tiling on/off (SUPER+SHIFT+T)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/kde-hypr/toggle-tiling.sh

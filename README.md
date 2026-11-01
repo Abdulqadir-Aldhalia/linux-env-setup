@@ -134,9 +134,10 @@ A symlink means the file lives in the repo, and `~/.config/kitty` just points to
 1. **Links `kde/bin` to `~/.config/kde-hypr`**: the cheat sheet, keybind search, tiling toggle, web search, calculator and the shortcut script.
 2. **Links the two KWin scripts** from `kde/kwin-scripts/` (explained [below](#how-the-kde-layer-works)) into `~/.local/share/kwin/scripts/`.
 3. **Installs Krohnkite** (`kde/install-krohnkite.sh`), the latest release from the [KDE Store](https://store.kde.org/p/2144146), with GitHub as a fallback. It never downgrades a newer version you already have.
-4. **Writes app launchers** to `~/.local/share/applications/hypr-*.desktop`. These are hidden menu entries that the shortcuts start (terminal, rofi, Thunar, ...).
-5. **Applies KDE settings** (`kde/apply-settings.sh`): 10 workspaces, slide animation, faster animations, SUPER+drag to move and resize, Krohnkite gaps and floating apps, dimming of unfocused windows, window rules, and kitty as KDE's terminal.
-6. **Sets every shortcut** (`kde/bin/apply-shortcuts.py`) through KDE's shortcut service, and removes KDE defaults that clash, such as `SUPER+1…9` opening taskbar entries.
+4. **Links the tiling toggle service** (`kde/systemd/`) into `~/.config/systemd/user/`.
+5. **Writes app launchers** to `~/.local/share/applications/hypr-*.desktop`. These are hidden menu entries that the shortcuts start (terminal, rofi, Thunar, ...).
+6. **Applies KDE settings** (`kde/apply-settings.sh`): 10 workspaces, slide animation, faster animations, SUPER+drag to move and resize, Krohnkite gaps and floating apps, dimming of unfocused windows, window rules, and kitty as KDE's terminal.
+7. **Sets every shortcut** (`kde/bin/apply-shortcuts.py`) through KDE's shortcut service, and removes KDE defaults that clash, such as `SUPER+1…9` opening taskbar entries.
 
 ---
 
@@ -152,7 +153,8 @@ KDE can already do most of what Hyprland does. This layer adds the missing parts
 | **`apply-shortcuts.py`** | Sets all shortcuts through KDE's shortcut service (`kglobalaccel`) | Editing `kglobalshortcutsrc` directly doesn't stick: KDE overwrites it at logout |
 | **App launchers** | `hypr-*.desktop` files | KDE shortcuts start apps through desktop entries |
 | **Window rules** | `no-initial-maximize`, `pip` | Krohnkite deliberately ignores maximized windows, and many apps remember being maximized, so without this they would never tile |
-| **`toggle-tiling.sh`** | Turns Krohnkite off or on and brings title bars back | Lets you switch to plain KDE |
+| **Tiling toggle** | `SUPER+SHIFT+T` → `hyprlike` starts the `linux-env-toggle-tiling` systemd user service → `toggle-tiling.sh` turns Krohnkite off or on and brings title bars back | KWin scripts can't run programs, so they start a systemd service. Unlike a hidden launcher, a service can't disappear when KDE reloads shortcuts at login |
+| **`check-shortcuts.py`** | Asks KDE what every cheat-sheet key is bound to and compares it with the sheet | One command to confirm everything works after an install, update or reboot |
 | **Cheat sheet** | `cheatsheet.sh` (yad popup) and `keybinds-search.sh` (rofi), both reading `keybinds.tsv` | One file feeds both |
 
 ---
@@ -327,6 +329,7 @@ Some apps write into their config folder (nvim updates `lazy-lock.json`, btop sa
 
 | Problem | Fix |
 |---|---|
+| Not sure what's broken | Run `python3 ~/.config/kde-hypr/check-shortcuts.py`. It checks all ~140 key bindings, the launchers and the toggle service, and prints a FAIL line for anything wrong |
 | A shortcut does nothing | Log out and back in once after installing: KDE only wires up launcher shortcuts at login. Then run `python3 ~/.config/kde-hypr/apply-shortcuts.py` again |
 | A shortcut opens the wrong thing | Another app or KDE default has the key. Run the shortcut script again; it clears known clashes |
 | An app won't tile | Is it maximized? Press `SUPER+F` to un-maximize. Is it a dialog or fixed-size window? Those float on purpose; `SUPER+Space` tiles it anyway |
@@ -354,7 +357,8 @@ kde/
     keybinds.tsv              the cheat sheet's contents (Key, Action, Note)
     cheatsheet.sh             SUPER+H popup
     keybinds-search.sh        SUPER+SHIFT+K rofi search
-    toggle-tiling.sh          SUPER+SHIFT+T
+    toggle-tiling.sh          SUPER+SHIFT+T (run by the systemd service below)
+    check-shortcuts.py        verifies every cheat-sheet key, launcher and the toggle service
     restore-borders.js        brings title bars back when tiling turns off
     web-search.sh calc.sh     SUPER+S, SUPER+ALT+C
   kwin-scripts/
@@ -362,6 +366,7 @@ kde/
     focusframe/               border around the focused window
   applications/*.desktop.in   launcher templates (@HOME@ is replaced at install)
   apply-settings.sh           KWin settings, effects, window rules
+  systemd/                    linux-env-toggle-tiling.service, linked to ~/.config/systemd/user
   install-krohnkite.sh        installs or upgrades Krohnkite, never downgrades
 ```
 

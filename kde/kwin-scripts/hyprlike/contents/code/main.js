@@ -40,10 +40,11 @@ workspace.windowAdded.connect(win => {
     }
 });
 
-// SUPER+ALT+T / SUPER+SHIFT+T: tiling on/off. Runs ~/.config/kde-hypr/toggle-tiling.sh via its launcher.
+// SUPER+ALT+T / SUPER+SHIFT+T: tiling on/off. KWin scripts can't run programs, so this starts
+// a systemd user service that runs ~/.config/kde-hypr/toggle-tiling.sh.
 function toggleTiling() {
-    callDBus("org.kde.kglobalaccel", "/component/hypr_tiling_desktop", "org.kde.kglobalaccel.Component",
-        "invokeShortcut", "_launch");
+    callDBus("org.freedesktop.systemd1", "/org/freedesktop/systemd1", "org.freedesktop.systemd1.Manager",
+        "StartUnit", "linux-env-toggle-tiling.service", "replace");
 }
 registerShortcut("Hyprlike Toggle Tiling", "Hyprlike: Toggle tiling on/off", "Meta+Alt+T", toggleTiling);
 registerShortcut("Hyprlike Toggle Tiling Alt", "Hyprlike: Toggle tiling on/off (alternate key)", "Meta+Shift+T", toggleTiling);

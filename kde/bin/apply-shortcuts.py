@@ -121,7 +121,7 @@ for a, keys in K.items():
 for desktop, key in (("hypr-terminal", "Meta+Return"), ("hypr-launcher", "Meta+D"), ("hypr-files", "Meta+E"),
                      ("hypr-browser", "Meta+B"), ("hypr-search", "Meta+S"), ("hypr-emoji", "Meta+Alt+E"),
                      ("hypr-calc", "Meta+Alt+C"), ("hypr-cheatsheet", "Meta+H"),
-                     ("hypr-keybinds", "Meta+Shift+K"), ("hypr-tiling", ())):
+                     ("hypr-keybinds", "Meta+Shift+K")):
     ka.doRegister(dbus.Array([f"{desktop}.desktop", "_launch", desktop, desktop], signature="s"))
     setk(f"{desktop}.desktop", "_launch", *(key if isinstance(key, tuple) else (key,)))
 setk("org.kde.spectacle.desktop", "RectangularRegionScreenShot", "Meta+Shift+S", "Alt+Shift+S", "Meta+Shift+Print")
